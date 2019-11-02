@@ -5,6 +5,10 @@
   "repository": "https://github.com/TimFinucane/SS3D-Open-Source-Collaborator.git",
   "author": "Timothy Finucane <timfinucane@outlook.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"No tests\""
+  },
   "dependencies": {
     "@discordjs/uws": "10.149.0",
     "discord.js": "^11.5.1",

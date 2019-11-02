@@ -1,0 +1,22 @@
+version: 0.2
+phases:
+  install:
+    commands:
+    - npm install
+  build:
+    commands:
+    - echo Build started on `date`
+    - npm build
+    - npm test
+  post_build:
+    commands:
+    - echo Build completed on `date`
+cache:
+  paths:
+  - 'node_modules/**/*'
+artifacts:
+  files:
+      - package.json
+      - package-lock.json
+      - 'build/**/*'
+  name: yourBuildName-$(date +%Y-%m-%d)
