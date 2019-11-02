@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
+    "moduleResolution": "node",
+    "lib": ["esnext"],
+    "baseUrl": "./src",
+    "outDir": "build",
+
+    "types": ["node"],
+    "esModuleInterop": false,
+    "inlineSourceMap": false
+  },
+}
