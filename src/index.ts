@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as Discord from 'discord.js';
 import CommandReciever from './commands';
-import { set_trello_keys } from 'trello';
+import { set_trello_keys } from './trello';
 
 let discord_token;
 
