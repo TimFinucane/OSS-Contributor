@@ -1,7 +1,7 @@
 import * as trello from './trello';
 import { Message } from 'discord.js';
 
-const board_id = 'V7Wct160';
+const board_id = 'z0H4ci3u';
 
 export interface UserReference {
   // What to use in external services or logging
