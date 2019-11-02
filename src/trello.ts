@@ -1,9 +1,15 @@
-import * as fs from 'fs';
 import fetch from 'node-fetch';
 
-const { key, token } = JSON.parse(fs.readFileSync('secrets.store', { encoding: 'utf8' }));
-
+// Globals
+// The trello api key and token
+let key: string | undefined, token: string | undefined;
+// The board field id to use in assignment
 let assignee_field_id: string | undefined;
+
+export function set_trello_keys(trello_key: string, trello_token: string) {
+  key = trello_key;
+  token = trello_token;
+}
 
 export interface Card {
   name: string;

@@ -1,12 +1,14 @@
 version: 0.2
 phases:
   install:
+    runtime-versions:
+      nodejs: 10
     commands:
     - npm install
   build:
     commands:
     - echo Build started on `date`
-    - npm build
+    - npm run build
     - npm test
   post_build:
     commands:
