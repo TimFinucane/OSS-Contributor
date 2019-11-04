@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"No tests\"",
+    "test": "jest",
+    "lint": "eslint src/ --ext .js,.ts",
     "start": "node ./build/index.js"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "@typescript-eslint/eslint-plugin": "^2.6.0",
     "@typescript-eslint/parser": "^2.6.0",
     "eslint": "^6.6.0",
+    "jest": "^24.9.0",
     "typescript": "^3.6.4"
   }
 }

@@ -2,18 +2,23 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "plugins": ["@typescript-eslint"],
-    "extends": ["plugin:@typescript-eslint/recommended"],
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
     "parserOptions": {
-      "ecmaVersion": 6,
-      "sourceType": "module",
       "ecmaFeatures": {
         "modules": true
-      }
+      },
+      "ecmaVersion": 6,
+      "project": "./tsconfig.json",
+      "sourceType": "module"
     },
     "rules": {
       "@typescript-eslint/camelcase": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/semi": ["error"],
       "brace-style": [
         1,
         "stroustrup"
@@ -22,6 +27,7 @@
         "warn",
         "multi-or-nest"
       ],
+      "eqeqeq": "error",
       "keyword-spacing": [
         "warn",
         {
