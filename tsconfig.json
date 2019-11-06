@@ -11,4 +11,6 @@
     "esModuleInterop": false,
     "inlineSourceMap": false
   },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts", "src/**/__tests__/*.ts"]
 }
