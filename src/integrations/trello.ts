@@ -32,7 +32,7 @@ export async function get_assignee_field(board: string) {
 
   const field = fields.find(field => field.name.toLowerCase() === 'assignee');
   if(field)
-    assignee_field_id = field.id
+    assignee_field_id = field.id;
   else {
     console.error("Unable to find assignee field");
     console.log(fields);
@@ -49,7 +49,7 @@ export async function find_cards(board: string, partial: string) {
   const cards: Card[] = await cards_request.json();
 
   // Find a card that matches the name
-  const found_cards = cards.filter(c => c.name.toLowerCase().includes(partial.toLowerCase()))
+  const found_cards = cards.filter(c => c.name.toLowerCase().includes(partial.toLowerCase()));
   return found_cards;
 }
 

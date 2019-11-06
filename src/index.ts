@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as Discord from 'discord.js';
 import CommandReciever from './commands';
-import { set_trello_keys } from './trello';
+import { set_trello_keys } from './integrations/trello';
 
 let discord_token;
 
@@ -24,7 +24,7 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('message', async msg => {
+client.on('message', msg => {
   if(msg.content.startsWith('!'))
     commands.parse_message(msg);
 });

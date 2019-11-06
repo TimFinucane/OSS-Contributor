@@ -1,4 +1,4 @@
-import * as trello from './trello';
+import * as trello from './integrations/trello';
 import { Message } from 'discord.js';
 
 const board_id = 'z0H4ci3u';
@@ -45,7 +45,7 @@ export default class CommandReciever {
         return { name: user.tag, toString: () => user.toString() };
       },
       author: ({ name: message.author.tag, toString: () => message.author.toString() }),
-    }
+    };
 
     switch(command) {
       case '!assign':
@@ -72,7 +72,7 @@ export default class CommandReciever {
     console.log(matches);
     let user;
     if(matches[1] || matches[2]) {
-      user = context.get_user(matches[1] || matches[2])
+      user = context.get_user(matches[1] || matches[2]);
       if(!user) {
         console.error(`Unable to find user ${matches[1] || matches[2]}`);
         context.send_message(`Unable to find user ${matches[1] || matches[2]}`);
