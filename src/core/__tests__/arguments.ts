@@ -8,8 +8,11 @@ function mock_message(content: string): Message {
   const user_matches = content.match(/(?<=<@!)\d+(?=>)/g);
 
   let users;
-  if(user_matches)
-    users = new Collection<string, User>(user_matches.map(match => [match, { tag: `User ${match}`, id: match } as User]));
+  if(user_matches) {
+    users = new Collection<string, User>(
+      user_matches.map(match => [match, { tag: `User ${match}`, id: match, toString: () => `<@!${match}>` } as User])
+    );
+}
   else
     users = [];
 
@@ -184,7 +187,7 @@ it("should reject a string when a user was requested", () => {
     }
 
     // TODO: Should update this error message
-    expect(e.message).toBe('Expected user');
+    expect(e.message).toBe('Found argument "world" of wrong type (expected user)');
   }
 });
 it("should reject a user when a string was requested", () => {
@@ -210,8 +213,7 @@ it("should reject a user when a string was requested", () => {
       return;
     }
 
-    // TODO: Should update this error message
-    expect(e.message).toBe('Unexpected user');
+    expect(e.message).toBe('Found argument "<@!1>" of wrong type (expected string)');
   }
 });
 

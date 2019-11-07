@@ -18,6 +18,7 @@ export type ArgumentSpecs = ArgumentSpec[];
 
 // Arguments given to the command (based on the argument parser)
 type Argument = User | string | (User | string)[];
+
 export class Arguments extends Array<Argument> {
   constructor(length: number) {
     super();
@@ -48,8 +49,8 @@ export class ArgumentParser {
    * @param message The discord message
    * @throws When
    */
-  public parse(message: Message) {
-    let remaining = message.content;
+  public parse(message: Message, parameter_string?: string) {
+    let remaining = parameter_string || message.content;
     const args = new Arguments(this.spec.length);
 
     this.spec.forEach(element => {
@@ -77,13 +78,13 @@ export class ArgumentParser {
     // When an array, we look out for potential commas at the end.
     // When this is the last argument, we will try and take all the remaining text.
     if(spec.is_array && spec.is_last)
-      regex = /^(?:<@!(\d+)>|\"(.*?)\"|\'(.*?)\'|([^\s,]+)),?/;
+      regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|([^\s,]+)),?/;
     else if(spec.is_array)
-      regex = /^(?:<@!(\d+)>|\"(.*?)\"|\'(.*?)\'|([^\s,]+)),?/;
+      regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|([^\s,]+)),?/;
     else if(spec.is_last)
-      regex = /^(?:<@!(\d+)>|\"(.*?)\"|\'(.*?)\'|(.+))/;
+      regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|(.+))/;
     else
-      regex = /^(?:<@!(\d+)>|\"(.*?)\"|\'(.*?)\'|([^\s]+))/;
+      regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|([^\s]+))/;
 
     let match = regex.exec(remaining);
     if(!match) {
@@ -99,20 +100,17 @@ export class ArgumentParser {
       output_arg = [];
 
       // We need a comma at the end to allow us to continue looking for arguments
-      while(match && match[0].endsWith(',')) {
-        output_arg.push(this.match_single_arg(match, spec.type, message));
+      while(match) {
+        output_arg.push(this.match_single_arg(match, message));
         output_remaining = output_remaining.trimLeft().slice(match[0].length);
-        match = regex.exec(output_remaining.trimLeft());
-      }
-
-      // TODO
-      if(match) {
-        output_arg.push(this.match_single_arg(match, spec.type, message));
-        output_remaining = output_remaining.trimLeft().slice(match[0].length);
+        if(match[0].endsWith(','))
+          match = regex.exec(output_remaining.trimLeft());
+        else
+          break;
       }
     }
     else {
-      output_arg = this.match_single_arg(match, spec.type, message);
+      output_arg = this.match_single_arg(match, message);
       output_remaining = output_remaining.slice(match[0].length);
     }
 
@@ -126,6 +124,19 @@ export class ArgumentParser {
         throw new ArgumentParsingException(`Could not find required suffix ${spec.suffix} to argument ${spec.name || `[${spec.index}]`}`);
     }
 
+    if(Array.isArray(output_arg)) {
+      const bad_arg = output_arg.find(arg =>
+        typeof arg === "string" && spec.type === "user" || typeof arg !== "string" && spec.type === "string"
+      );
+
+      if(bad_arg)
+        throw new ArgumentParsingException(`Found argument ${bad_arg.toString()} of wrong type (expected ${spec.type})`);
+    }
+    else {
+      if(typeof output_arg === "string" && spec.type === "user" || typeof output_arg !== "string" && spec.type === "string")
+        throw new ArgumentParsingException(`Found argument "${output_arg.toString()}" of wrong type (expected ${spec.type})`);
+    }
+
     args[spec.index] = output_arg;
     if(spec.name)
       args.by_name[spec.name] = output_arg;
@@ -136,18 +147,11 @@ export class ArgumentParser {
   /**
    * Check and confirm a single found value-match
    * @param match The match found
-   * @param type The type the match should be
    * @param context Information about discord
    *
    * @returns The found value. Users are returned as Discord.Users
-   * @throws If the value is not the right type, or the user was not found
    */
-  private static match_single_arg(match: RegExpExecArray, type: ArgumentType, context: Message) {
-    if(match[1] && type === 'string')
-      throw new ArgumentParsingException("Unexpected user");
-    else if(!match[1] && type === 'user')
-      throw new ArgumentParsingException("Expected user");
-
+  private static match_single_arg(match: RegExpExecArray, context: Message) {
     return match[2] || match[3] || match[4] || ArgumentParser.find_user_from_id(context, match[1]);
   }
 
