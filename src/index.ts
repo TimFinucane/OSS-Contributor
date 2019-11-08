@@ -1,32 +1,34 @@
 import * as fs from 'fs';
 import * as Discord from 'discord.js';
-import CommandReciever from './commands';
-import { set_trello_keys } from './integrations/trello';
+
+import Trello from './integrations/trello';
+import AssignCard from './commands/assign';
+import System from './core/system';
 
 let discord_token;
 
-if(process.env.TRELLO_KEY && process.env.TRELLO_TOKEN && process.env.DISCORD_TOKEN) {
-  set_trello_keys(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
-  discord_token = process.env.DISCORD_TOKEN;
-}
-else if(fs.existsSync('secrets.store')) {
+// Load env from store
+if(fs.existsSync('secrets.store')) {
   const contents = JSON.parse(fs.readFileSync('secrets.store', { encoding: 'utf8' }));
-  set_trello_keys(contents.trello_key, contents.trello_token);
-  discord_token = contents.discord_token;
+  this.process.env = { ...this.process.env, ...contents };
 }
+
+if(process.env.DISCORD_TOKEN)
+  discord_token = process.env.DISCORD_TOKEN;
 else
   throw new Error("No keys found");
 
 const client = new Discord.Client();
-const commands = new CommandReciever();
+const system = new System(
+  [
+    AssignCard,
+  ],
+  [
+    new Trello(),
+  ],
+);
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-});
-
-client.on('message', msg => {
-  if(msg.content.startsWith('!'))
-    commands.parse_message(msg);
-});
+client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
+client.on('message', msg => system.on_message(msg));
 
 client.login(discord_token);
