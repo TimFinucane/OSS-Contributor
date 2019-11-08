@@ -1,15 +1,5 @@
 import fetch from 'node-fetch';
-
-// Globals
-// The trello api key and token
-let key: string | undefined, token: string | undefined;
-// The board field id to use in assignment
-let assignee_field_id: string | undefined;
-
-export function set_trello_keys(trello_key: string, trello_token: string) {
-  key = trello_key;
-  token = trello_token;
-}
+import { Integration } from '../core/context';
 
 export interface Card {
   name: string;
@@ -20,61 +10,89 @@ export interface CustomField {
   id: string;
 }
 
-/**
- * Find the custom field to use for setting the assignee
- */
-export async function get_assignee_field(board: string) {
-  console.log("Figuring out assignee field");
+export default class Trello extends Integration {
+  public static integration_name = "trello";
+  public name = Trello.integration_name;
 
-  // Try to find the assignee field
-  const fields_request = await fetch(`https://api.trello.com/1/boards/${board}/customFields/?fields=name&key=${key}&token=${token}`);
-  const fields: CustomField[] = await fields_request.json();
+  public constructor() {
+    super();
 
-  const field = fields.find(field => field.name.toLowerCase() === 'assignee');
-  if(field)
-    assignee_field_id = field.id;
-  else {
-    console.error("Unable to find assignee field");
-    console.log(fields);
+    if(!process.env.TRELLO_KEY || !process.env.TRELLO_TOKEN)
+      throw new Error("Cannot find keys for trello (TRELLO_KEY, TRELLO_TOKEN). Need to be present in secrets.store or environment");
+
+    this.key = process.env.TRELLO_KEY;
+    this.token = process.env.TRELLO_TOKEN;
   }
-}
 
-/**
- * Find cards that match the given partial string
- * @param card
- */
-export async function find_cards(board: string, partial: string) {
-  // Find the card name
-  const cards_request = await fetch(`https://api.trello.com/1/boards/${board}/cards/?fields=name&key=${key}&token=${token}`);
-  const cards: Card[] = await cards_request.json();
+  public generate(/* message: Message */) {
+    // TODO:
+    return this;
+  }
 
-  // Find a card that matches the name
-  const found_cards = cards.filter(c => c.name.toLowerCase().includes(partial.toLowerCase()));
-  return found_cards;
-}
+  /**
+   * Find cards that match the given partial string
+   * @param card
+   */
+  public async find_cards(board: string, partial: string) {
+    // Find the card name
+    const cards_request = await fetch(`https://api.trello.com/1/boards/${board}/cards/?fields=name&key=${this.key}&token=${this.token}`);
+    const cards: Card[] = await cards_request.json();
 
+    // Find a card that matches the name
+    const found_cards = cards.filter(c => c.name.toLowerCase().includes(partial.toLowerCase()));
+    return found_cards;
+  }
 
-/**
- * Assign a card to a given assignee
- * @param card_id
- * @param assignee
- */
-export async function assign_card(board: string, card_id: string, assignee: string) {
-  // Try to find the assignee field
-  if(!assignee_field_id)
-    await get_assignee_field(board);
+  /**
+   * Assign a card to a given assignee
+   * @param card_id
+   * @param assignee
+   */
+  public async assign_card(board: string, card_id: string, assignee: string) {
+    // Try to find the assignee field
+    if(!this.assignee_field_id)
+      await this.get_assignee_field(board);
 
-  const result = await fetch(
-    `https://api.trello.com/1/card/${card_id}/customField/${assignee_field_id}/item?key=${key}&token=${token}`,
-    {
-      method: 'PUT',
-      body: JSON.stringify({ value: { text: assignee } }),
-      headers: {
-        'Content-Type': 'application/json'
+    const result = await fetch(
+      `https://api.trello.com/1/card/${card_id}/customField/${this.assignee_field_id}/item?key=${this.key}&token=${this.token}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ value: { text: assignee } }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    }
-  );
+    );
 
-  if(!result.ok)
-    console.error(await result.text());
+    if(!result.ok)
+      console.error(await result.text());
+  }
+
+  /**
+   * Find the custom field to use for setting the assignee
+   */
+  private async get_assignee_field(board: string) {
+    console.log("Figuring out assignee field");
+
+    // Try to find the assignee field
+    const fields_request = await fetch(
+      `https://api.trello.com/1/boards/${board}/customFields/?fields=name&key=${this.key}&token=${this.token}`
+    );
+    const fields: CustomField[] = await fields_request.json();
+
+    const field = fields.find(field => field.name.toLowerCase() === 'assignee');
+    if(field)
+      this.assignee_field_id = field.id;
+    else {
+      console.error("Unable to find assignee field");
+      console.log(fields);
+    }
+  }
+
+  // The trello api key and token
+  private key: string;
+  private token: string;
+
+  // The board field id to use in assignment
+  private assignee_field_id: string | undefined;
 }
