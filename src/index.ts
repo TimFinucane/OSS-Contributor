@@ -29,6 +29,7 @@ const system = new System(
 );
 
 client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`));
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('message', msg => system.on_message(msg));
 
 client.login(discord_token);

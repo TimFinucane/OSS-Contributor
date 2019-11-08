@@ -2,7 +2,6 @@ import { User, Message } from "discord.js";
 // TODO: Everything should work without discord eventually
 
 import { ArgumentSpecs, Arguments } from "./arguments";
-import { CommandContext } from "./context";
 
 /**
  * An integration is set up on program start.
