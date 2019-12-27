@@ -30,7 +30,7 @@ export class Arguments extends Array<Argument> {
 
 // Inner stuff
 type InnerArgumentSpec = ArgumentSpec & { index: number; is_last: boolean };
-export class ArgumentParsingException extends Error {}
+export class ArgumentParsingException extends Error { }
 
 /**
  * Parses an argument spec set
@@ -78,7 +78,7 @@ export class ArgumentParser {
     // When an array, we look out for potential commas at the end.
     // When this is the last argument, we will try and take all the remaining text.
     if(spec.is_array && spec.is_last)
-      regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|([^\s,]+)),?/;
+      regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|([^,]+)),?/;
     else if(spec.is_array)
       regex = /^(?:<@!(\w+)>|\"(.*?)\"|\'(.*?)\'|([^\s,]+)),?/;
     else if(spec.is_last)

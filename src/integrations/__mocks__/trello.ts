@@ -4,7 +4,9 @@ import { Card } from '../trello';
 
 const trello: typeof import('../trello') = jest.genMockFromModule('../trello');
 
-const cards: (Card & { assignee?: string })[] = [
+export type AssignableCard = Card & { assignee?: string };
+
+export const default_cards: AssignableCard[] = [
   {
     name: 'Card 1',
     id: '1'
@@ -27,6 +29,8 @@ export default class Trello {
   public static integration_name = 'trello';
   public name = Trello.integration_name;
 
+  public constructor(public cards: AssignableCard[] = default_cards) { }
+
   public generate() {
     return this;
   }
@@ -47,8 +51,6 @@ export default class Trello {
 
     return Promise.resolve(true);
   }
-
-  public cards = cards;
 }
 
 trello.default = Trello as any;

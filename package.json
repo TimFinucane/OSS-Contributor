@@ -6,9 +6,9 @@
   "author": "Timothy Finucane <timfinucane@outlook.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "lint": "eslint src/ --ext .js,.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "jest --verbose",
+    "lint": "eslint --ext .js,.ts src",
     "start": "node ./build/index.js"
   },
   "dependencies": {
@@ -32,5 +32,7 @@
     "testEnvironment": "node",
     "collectCoverage": false
   },
-  "eslintIgnore": ["build"]
+  "eslintIgnore": [
+    "build"
+  ]
 }

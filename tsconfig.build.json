@@ -12,10 +12,14 @@
       "node"
     ],
     "esModuleInterop": false,
-    "inlineSourceMap": false,
-    "noEmit": true
+    "inlineSourceMap": false
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
-    "build/**/*"
+    "src/**/*.spec.ts",
+    "src/**/__tests__/*.ts",
+    "src/**/__mocks__/*.ts"
   ]
 }
