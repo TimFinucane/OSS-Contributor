@@ -14,8 +14,10 @@ import { ArgumentSpecs, Arguments } from "./arguments";
  */
 export abstract class Integration {
   public abstract name: string;
+
+  public abstract initialize(): Promise<void> | void;
   // Generate an integration with context from a discord message
-  public abstract generate(message: Message): any;
+  public abstract generate(message: Message): any | Promise<any>;
 }
 
 export interface CommandContext {
