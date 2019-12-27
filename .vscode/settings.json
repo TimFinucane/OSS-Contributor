@@ -1,3 +1,15 @@
 {
-  "eslint.autoFixOnSave": true,
+  // Run eslint always
+  "eslint.enable": true,
+  "eslint.run": "onType",
+  "eslint.packageManager": "yarn",
+  "eslint.alwaysShowStatus": true,
+  // Adjust typescript formatting behaviour
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
+  // Auto fix with eslint on save
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
 }
