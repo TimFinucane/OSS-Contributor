@@ -38,8 +38,8 @@ export default class Trello {
     this.cards = new_cards;
   }
 
-  public async find_cards(board: string, partial: string): Promise<Card[]> {
-    return Promise.resolve(this.cards.filter(card => card.name.toLowerCase().includes(partial.toLowerCase())));
+  public async get_cards(): Promise<Card[]> {
+    return Promise.resolve(this.cards);
   }
   public async set_assignee(board: string, card_id: string, assignee: string) {
     const card = this.cards.find(card => card.id === card_id);

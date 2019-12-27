@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { Integration } from '../../core/context';
 import { BoardInfo, load_board } from './board';
 import { TrelloConfiguration } from './configuration';
@@ -39,22 +38,18 @@ export default class Trello extends Integration {
 
   /**
    * Find cards that match the given partial string
-   * @param card
    */
-  public async find_cards(board_id: string, partial: string) {
+  public async get_cards(board_id: string) {
     const board = await this.get_board_info(board_id);
 
-    // Find the card name
+    // Find all cards
     const cards = await api.get_nested_cards(board_id, this.configuration.key, this.configuration.token);
 
-    // Find a card that matches the name
-    const found_cards = cards
-      .filter(c => c.name.toLowerCase().includes(partial.toLowerCase()))
+    return cards
       .map(card => ({ // Get the assignee field
         ...card,
         assignee: card.customFieldItems.find(item => item.id === board.assignee_field.id)?.value.text,
       }));
-    return found_cards;
   }
 
   /**
@@ -66,7 +61,13 @@ export default class Trello extends Integration {
   public async set_assignee(board_id: string, card_id: string, assignee: string) {
     // Try to find the assignee field
     const board = await this.get_board_info(board_id);
-    const result = await api.set_card_custom_field(card_id, board.assignee_field.id, assignee, this.configuration.key, this.configuration.token);
+    const result = await api.set_card_custom_field(
+      card_id,
+      board.assignee_field.id,
+      assignee,
+      this.configuration.key,
+      this.configuration.token
+    );
 
     if(!result.ok)
       console.error(await result.text());

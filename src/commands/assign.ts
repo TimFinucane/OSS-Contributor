@@ -13,35 +13,36 @@ const board_id = 'z0H4ci3u';
  */
 async function assign_card(context: CommandContext, args: Arguments) {
   const user = args.by_name.user as User || context.author;
-  const card_names = args.by_name.cards as string[];
+  const assign_names = args.by_name.cards as string[];
 
   const trello = context.get_integration<Trello>(Trello.integration_name);
   if(!trello)
     throw new Error("Trello integration not present");
 
   // Go through each card mentioned, and find the potential card/s the user could mean
-  const cards = await Promise.all(card_names.map(card_name => trello.find_cards(board_id, card_name)));
+  const all_cards = await trello.get_cards(board_id);
+  const matches = assign_names.map(assign_name => all_cards.filter(card => card.name.toLowerCase().includes(assign_name.toLowerCase())));
 
   const assignable_cards = [];
-  for(let i = 0; i < cards.length; ++i) {
+  for(let i = 0; i < matches.length; ++i) {
     // Each card name could match multiple cards, in a card-set
-    const card_set = cards[i];
+    const card_set = matches[i];
 
     // If there is exactly one card, use that.
     // If there are multiple matches, but one is EXACT, then use that.
     // Otherwise warn the user
     if(card_set.length === 0)
-      return await context.send_message(`Card "${card_names[i]}" not found`);
+      return await context.send_message(`Card "${matches[i]}" not found`);
     else if(card_set.length === 1)
       assignable_cards.push(card_set[0]);
     else { // Multiples
       // Try to find an exact match
-      const found_card = card_set.find(card => card.name === card_names[i]);
+      const found_card = card_set.find(card => card.name === assign_names[i]);
       if(found_card)
         assignable_cards.push(found_card);
       else {
         // If there are few enough cards, display the cards that match. Otherwise, just say there are too many.
-        let message = `Name "${card_names[i]}" too ambiguous, ${card_set.length} matches found`;
+        let message = `Name "${matches[i]}" too ambiguous, ${card_set.length} matches found`;
         if(card_set.length <= 3)
           message += ": " + card_set.map(card => card.name).join(', ');
         else
