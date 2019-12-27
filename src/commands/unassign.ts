@@ -11,7 +11,7 @@ const board_id = 'z0H4ci3u';
  * @param context
  * @param parameters
  */
-async function assign_card(context: CommandContext, args: Arguments) {
+async function unassign_card(context: CommandContext, args: Arguments) {
   const user = args.by_name.user as User || context.author;
   const card_names = args.by_name.cards as string[];
 
@@ -20,6 +20,7 @@ async function assign_card(context: CommandContext, args: Arguments) {
     throw new Error("Trello integration not present");
 
   // Go through each card mentioned, and find the potential card/s the user could mean
+  // TODO: This code is reusable, find a way of packaging it (probably with the integration?)
   const cards = await Promise.all(card_names.map(card_name => trello.find_cards(board_id, card_name)));
 
   const assignable_cards = [];
@@ -51,24 +52,30 @@ async function assign_card(context: CommandContext, args: Arguments) {
       }
     }
   }
+
+  for(const card of assignable_cards) {
+    if(card.assignee !== user.tag)
+      return await context.send_message(`The card '${card.name}' is not assigned to ${user}`);
+  }
+
   // Finally assign all found cards
-  await Promise.all(assignable_cards.map(card => trello.set_assignee(board_id, card.id, user.tag)));
+  await Promise.all(assignable_cards.map(card => trello.set_assignee(board_id, card.id, "")));
 
   // And inform the user
-  await context.send_message(`Assigned ${user} to ` + assignable_cards.map(card => card.name).join(", "));
+  await context.send_message(`Unassigned ${user} from ` + assignable_cards.map(card => card.name).join(", "));
 }
 
 const AssignCard: Command = {
-  name: "Assign Card",
-  command_name: 'assign',
-  description: "Assign a card on the trello board to a user",
+  name: "Unassign Card",
+  command_name: 'unassign',
+  description: "Unassign a card on the trello board from a user",
 
   arguments: [
     {
       name: 'user',
       type: 'user',
       optional: true,
-      suffix: ' to'
+      suffix: ' from'
     },
     {
       name: 'cards',
@@ -76,7 +83,7 @@ const AssignCard: Command = {
       is_array: true
     }
   ],
-  run: assign_card,
+  run: unassign_card,
 };
 
 export default AssignCard;

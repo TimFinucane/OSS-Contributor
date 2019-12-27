@@ -130,7 +130,7 @@ export class ArgumentParser {
       );
 
       if(bad_arg)
-        throw new ArgumentParsingException(`Found argument ${bad_arg.toString()} of wrong type (expected ${spec.type})`);
+        throw new ArgumentParsingException(`Found argument "${bad_arg.toString()}" of wrong type (expected ${spec.type})`);
     }
     else {
       if(typeof output_arg === "string" && spec.type === "user" || typeof output_arg !== "string" && spec.type === "string")
