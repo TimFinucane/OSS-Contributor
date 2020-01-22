@@ -4,7 +4,7 @@ import { Arguments } from "../core/arguments";
 import Command, { CommandContext } from "../core/context";
 import Trello from "../integrations/trello";
 
-const board_id = 'z0H4ci3u';
+const board_id = 'ZVcDitv0';
 
 /**
  * Assign a supplied user to a supplied card.
