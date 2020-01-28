@@ -4,7 +4,7 @@ import Command, { Integration } from "./context";
 import { ArgumentParser } from "./arguments";
 
 export default class System {
-  public constructor(private commands: Command[], private integrations: Integration[]) {}
+  public constructor(private commands: Command[], private integrations: Integration[]) { }
 
   // Recieving a message
   public async on_message(message: Message) {
@@ -34,7 +34,7 @@ export default class System {
       author: message.author,
 
       get_integration: <T extends Integration>(name: string): T | undefined => {
-        const integration = this.integrations.find(integration => integration.name === name);
+        const integration = this.integrations.find(integration => integration.name.localeCompare(name) === 0);
         return integration && (integration.generate(message) as T);
       }
     };

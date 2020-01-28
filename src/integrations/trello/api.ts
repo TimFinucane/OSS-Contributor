@@ -30,7 +30,7 @@ export interface CustomField {
 
 export function get_nested_cards(board_id: string, key: string, token: string): Promise<Card[]> {
   return fetch(
-    `https://api.trello.com/1/boards/${board_id}/customFields/?fields=name&key=${key}&token=${token}`
+    `https://api.trello.com/1/boards/${board_id}/cards/?fields=name&customFieldItems=true&key=${key}&token=${token}`
   ).then(res => res.json());
 }
 

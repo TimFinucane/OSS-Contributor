@@ -48,7 +48,7 @@ export default class Trello extends Integration {
     return cards
       .map(card => ({ // Get the assignee field
         ...card,
-        assignee: card.customFieldItems.find(item => item.id === board.assignee_field.id)?.value.text,
+        assignee: card.customFieldItems.find(item => item.idCustomField === board.assignee_field.id)?.value.text,
       }));
   }
 
