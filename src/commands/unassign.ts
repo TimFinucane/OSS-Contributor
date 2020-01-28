@@ -32,7 +32,7 @@ async function unassign_card(context: CommandContext, args: Arguments) {
     // If there are multiple matches, but one is EXACT, then use that.
     // Otherwise warn the user
     if(card_set.length === 0)
-      return await context.send_message(`Card "${matches[i]}" not found`);
+      return await context.send_message(`Card "${assign_names[i]}" not found`);
     else if(card_set.length === 1)
       assignable_cards.push(card_set[0]);
     else { // Multiples
@@ -42,7 +42,7 @@ async function unassign_card(context: CommandContext, args: Arguments) {
         assignable_cards.push(found_card);
       else {
         // If there are few enough cards, display the cards that match. Otherwise, just say there are too many.
-        let message = `Name "${matches[i]}" too ambiguous, ${card_set.length} matches found`;
+        let message = `Name "${assign_names[i]}" too ambiguous, ${card_set.length} matches found`;
         if(card_set.length <= 3)
           message += ": " + card_set.map(card => card.name).join(', ');
         else
